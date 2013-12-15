@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Cookie QUnit Tests</title>
+        <link rel="stylesheet" href="resources/qunit.css" />
+        
+        
+        <script src="resources/qunit.js"></script>
+        <script src="../Interface.js"></script>
+    </head>
+    <body>
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
+
+
+        <div>
+            <a href="foo.html">Abre na mesma aba</a><br />
+            <a href="http://www.terra.com.br">Abre em outra aba</a>
+            <br /><br /><br />
+
+            <a href="#anc2" id="anc1">Primeira</a>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <a href="#anc3" id="anc2">Segunda</a>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <a href="#anc4" id="anc3">Terceira</a>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <a href="#anc5" id="anc4">Quarta</a>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <a href="#anc6" id="anc5">Quinta</a>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <a href="#anc1" id="anc6">Sexta</a>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <p>P pp p p p p p  pp </p>
+        </div>
+
+
+        <script>
+            // <![CDATA[
+
+
+            module('Métodos para interação com interface');
+
+
+            // Prepara os links externos para abrirem em outra aba.
+            Interface.SetAnchorToNewPage();
+            // Seta animação para rolagem das ancoras
+            Interface.SetAnchorAnimation();
+
+
+
+
+
+            module('Métodos para interação com interface');
+
+
+
+            
+            var oBody = document.getElementsByTagName('body')[0];
+            var newDiv = document.createElement('div');
+            newDiv.id = 'newDiv';
+            newDiv.setAttribute('data-dragme', 'true');
+            newDiv.style.cssFloat = 'left';
+            newDiv.style.width = '100px';
+            newDiv.style.height = '100px';
+            newDiv.style.position = 'absolute';
+            newDiv.style.left = '150px';
+            newDiv.style.top = '50px';
+            newDiv.style.backgroundColor = 'transparent';
+            newDiv.style.zIndex = '1';
+            oBody.appendChild(newDiv);
+
+
+
+
+            test('GetScrollX; GetScrollY; AbsoluteCoords', function () {
+                newDiv.style.left = '150px';
+                newDiv.style.top = '50px';
+
+                equal(Interface.GetScrollX(newDiv), 150, 'Posição X do Div');
+                equal(Interface.GetScrollY(newDiv), 50, 'Posição Y do Div');
+
+                // Reposiciona o node Absolutamente
+                Interface.AbsoluteCoords(newDiv, 300, 300);
+
+                equal(Interface.GetScrollX(newDiv), 300, 'Posição absoluta X do Div');
+                equal(Interface.GetScrollY(newDiv), 300, 'Posição absoluta Y do Div');
+            });
+
+            test('AlignToCenter; AlignToCenterScreen; ExtendNode', function () {
+                ok(true, 'Conferencia feita visualmente');
+
+                if (true == true) {
+                    // Torna a div de teste visível
+                    newDiv.style.backgroundColor = '#000';
+                    newDiv.style.left = '0px';
+                    newDiv.style.top = '0px';
+
+                    alert('Div de Teste deve estar no canto superior esquerdo da tela');
+
+                    Interface.AlignToCenter(newDiv, 'y');
+                    alert('Div de Teste deve estar centralizada verticalmente');
+
+                    Interface.AlignToCenter(newDiv, 'x');
+                    alert('Div de Teste deve estar centralizada horizontalmente');
+
+
+                    Interface.AbsoluteCoords(newDiv, oBody.clientWidth - 100, 0);
+                    alert('Div de Teste deve estar no canto superior direito da tela');
+
+
+                    Interface.AlignToCenterScreen(newDiv, 'xy');
+                    alert('Div de Teste deve estar no centro da tela novamente');
+
+
+                    Interface.AbsoluteCoords(newDiv, 0, 0);
+                    alert('Div de Teste deve ir para o Topo e para a Esquerda [posição inicial]');
+
+
+
+                    Interface.ExtendNode(newDiv, true);
+                    alert('A div agora deve estar extendida por toda largura da tela');
+
+
+                    // Torna a div de teste invisível
+                    alert('Teste de Drag : Arraste a div livremente pela tela');
+                    newDiv.style.cssFloat = 'left';
+                    newDiv.style.width = '100px';
+                    newDiv.style.height = '100px';
+                    newDiv.style.position = 'absolute';
+                    newDiv.style.left = '150px';
+                    newDiv.style.top = '50px';
+                    Interface.SetDragElement();
+                }
+            });
+
+
+
+
+
+
+            // ]]>
+        </script>
+    </body>
+</html>
