@@ -175,7 +175,11 @@ if (typeof (Interface) === 'undefined') { var Interface = {}; }
             if (n == 'body') { iR = window.pageXOffset; }
             else {
                 while (o) {
-                    iR += (o.offsetLeft - o.scrollLeft + o.clientLeft);
+                    var osl = o.offsetLeft;
+                    var sl = (o.tagName.toLowerCase() == 'body') ? 0 : o.scrollLeft;
+                    var cl = o.clientLeft;
+
+                    iR += (osl - sl + cl);
                     o = o.offsetParent;
                 }
             }
@@ -198,17 +202,21 @@ if (typeof (Interface) === 'undefined') { var Interface = {}; }
         GetScrollY : function(o) {
             o = (o === undefined) ? document.getElementsByTagName('html')[0] : o;
 
-	        var iR = 0;
-	        var n = o.tagName.toLowerCase();
+            var iR = 0;
+            var n = o.tagName.toLowerCase();
 
-	        if (n == 'html') { iR = window.pageYOffset; }
-	        else { 
-		        while(o) {
-			        iR += (o.offsetTop - o.scrollTop + o.clientTop);
-			        o = o.offsetParent;
-		        }
-	        }
-	        return iR;
+            if (n == 'html') { iR = window.pageYOffset; }
+            else {
+                while (o) {
+                    var ost = o.offsetTop;
+                    var st = (o.tagName.toLowerCase() == 'body') ? 0 : o.scrollTop;
+                    var ct = o.clientTop;
+
+                    iR += (ost - st + ct);
+                    o = o.offsetParent;
+                }
+            }
+            return iR;
         },
 
 
