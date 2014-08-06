@@ -18,7 +18,7 @@
 // Caso não exista, inicia objeto CodeCraft
 var CodeCraft = (CodeCraft || function () { });
 if(typeof(CodeCraft) === 'function') { CodeCraft = new CodeCraft(); };
-if(typeof(CodeCraft.Interface) === 'undefined') { CodeCraft.Interface = {}; }
+
 
 
 
@@ -35,13 +35,21 @@ if(typeof(CodeCraft.Interface) === 'undefined') { CodeCraft.Interface = {}; }
 *
 * @type {Class}
 */
-(function () {
+CodeCraft.Interface = new (function () {
 
 
 
 
 
-    var nMethods = {
+
+
+
+
+
+    /**
+    * OBJETO PÚBLICO QUE SERÁ EXPOSTO.
+    */
+    var public = this.Control = {
         /**
         * Aponta os links externos para abrirem em nova página.
         *
@@ -437,9 +445,5 @@ if(typeof(CodeCraft.Interface) === 'undefined') { CodeCraft.Interface = {}; }
     };
 
 
-
-
-
-    // Adiciona métodos locais aos métodos do objeto Interface
-    for (var it in nMethods) { CodeCraft.Interface[it] = nMethods[it]; }
-})();
+    return public;
+});
