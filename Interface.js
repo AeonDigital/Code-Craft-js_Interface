@@ -5,6 +5,8 @@
 * @module Interface
 * @file Manipuladores de Interface.
 *
+* @requires BasicDOM
+*
 * @author Rianna Cantarelli <rianna.aeon@gmail.com>
 */
 
@@ -33,9 +35,7 @@ if(typeof(CodeCraft) === 'function') { CodeCraft = new CodeCraft(); };
 * @type {Class}
 */
 CodeCraft.Interface = new (function () {
-
-
-
+    var _dom = CodeCraft.BasicDOM;
 
 
 
@@ -147,7 +147,7 @@ CodeCraft.Interface = new (function () {
                 // Apenas se o atributo Href estiver setado e apontar pra uma ancora
                 var h = (a.hasAttribute('href') ? a.href : null);
                 if (h != null && h.indexOf('#') != -1) {
-                    a.addEventListener('click', evt_AncScroll, false);
+                    _dom.SetEvent(a, 'click', evt_AncScroll);
                 }
             }
         },
@@ -408,13 +408,12 @@ CodeCraft.Interface = new (function () {
                 cY = e.clientY - parseInt(mElem.style.top.replace('px', ''), 10);
                 cX = e.clientX - parseInt(mElem.style.left.replace('px', ''), 10);
 
-                window.removeEventListener('mousemove', CMD_MoveElemOnMouseMove, true);
-                window.addEventListener('mousemove', CMD_MoveElemOnMouseMove, true);
+                _dom.SetEvent(window, 'mousemove', CMD_MoveElemOnMouseMove);
             };
 
             // Remove o evento de arrastar elementos ao soltar o botão do mouse
             CMD_StopDragOnMouseUp = function () {
-                window.removeEventListener('mousemove', CMD_MoveElemOnMouseMove, true);
+                _dom.RemoveEvent(window, 'mousemove', CMD_MoveElemOnMouseMove);
                 mElem = null;
                 cY = null;
                 cX = null;
@@ -428,14 +427,12 @@ CodeCraft.Interface = new (function () {
 
             // Apenas se houver algum node movel
             if (drags.length > 0) {
-                window.removeEventListener('mouseup', CMD_StopDragOnMouseUp, false);
-                window.addEventListener('mouseup', CMD_StopDragOnMouseUp, false);
+                _dom.SetEvent(window, 'mouseup', CMD_StopDragOnMouseUp);
 
                 for (var i = 0; i < drags.length; i++) {
                     var elem = drags[i];
                     elem.style.position = 'absolute';
-                    elem.removeEventListener('mousedown', CMD_DragOnMouseDown, false);
-                    elem.addEventListener('mousedown', CMD_DragOnMouseDown, false);
+                    _dom.SetEvent(elem, 'mousedown', CMD_DragOnMouseDown);
                 }
             }
         }
