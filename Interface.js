@@ -385,13 +385,13 @@ CodeCraft.Interface = new (function () {
         * @memberof CodeCraft.Interface
         *
         * @example Exemplo de elemento marcado para ser arrastado.
-        * <div data-dragme="true"> ... </div>
+        * <div data-cc-dragme="true"> ... </div>
         */
         SetDragElement: function () {
             var mElem = null;
             var cY = null; // Correção de Y
             var cX = null; // Correção de X
-            var o = document.querySelectorAll('*[data-dragme="true"]');
+            var o = document.querySelectorAll('*[data-cc-dragme="true"]');
 
 
             // Mantem apenas objetos HTML
