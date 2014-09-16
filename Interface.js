@@ -9,7 +9,7 @@
 *
 * @author Rianna Cantarelli <rianna.aeon@gmail.com>
 */
-
+'use strict';
 
 
 
@@ -46,7 +46,7 @@ CodeCraft.Interface = new (function () {
     /**
     * OBJETO PÚBLICO QUE SERÁ EXPOSTO.
     */
-    var public = this.Control = {
+    var _public = this.Control = {
         /**
         * Aponta os links externos para abrirem em nova página.
         *
@@ -94,7 +94,7 @@ CodeCraft.Interface = new (function () {
         * @param {Object}                           o                                   Objeto alvo até onde a rolagem será feita.
         */
         ScrollToAnchor: function (o) {
-            scrSt = (window.scrollY) ? window.scrollY :
+            var scrSt = (window.scrollY) ? window.scrollY :
                     (document.documentElement.scrollTop) ? document.documentElement.scrollTop :
                      document.body.scrollTop;
 
@@ -103,9 +103,10 @@ CodeCraft.Interface = new (function () {
             var time = 0;
             var int = 10;
 
+
             var easeInOut = function (t, b, c, d) {
-                p1 = c / 2;
-                p2 = 1 - Math.cos(Math.PI * t / d);
+                var p1 = c / 2;
+                var p2 = 1 - Math.cos(Math.PI * t / d);
                 return (p1 * p2 + b);
             };
             var scrollPage = function () {
@@ -402,7 +403,7 @@ CodeCraft.Interface = new (function () {
 
 
             // Aciona evento Mousemove ao clicar em um elemento que permite ser arrastado
-            CMD_DragOnMouseDown = function (e) {
+            var CMD_DragOnMouseDown = function (e) {
                 mElem = this;
 
                 cY = e.clientY - parseInt(mElem.style.top.replace('px', ''), 10);
@@ -412,7 +413,7 @@ CodeCraft.Interface = new (function () {
             };
 
             // Remove o evento de arrastar elementos ao soltar o botão do mouse
-            CMD_StopDragOnMouseUp = function () {
+            var CMD_StopDragOnMouseUp = function () {
                 _dom.RemoveEvent(window, 'mousemove', CMD_MoveElemOnMouseMove);
                 mElem = null;
                 cY = null;
@@ -420,7 +421,7 @@ CodeCraft.Interface = new (function () {
             };
 
             // Move elemento clicado junto ao movimento do mouse
-            CMD_MoveElemOnMouseMove = function (e) {
+            var CMD_MoveElemOnMouseMove = function (e) {
                 mElem.style.top = (e.clientY - cY) + 'px';
                 mElem.style.left = (e.clientX - cX) + 'px';
             };
@@ -439,5 +440,5 @@ CodeCraft.Interface = new (function () {
     };
 
 
-    return public;
+    return _public;
 });
