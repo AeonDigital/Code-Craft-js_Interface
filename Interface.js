@@ -43,6 +43,151 @@ CodeCraft.Interface = new (function () {
 
 
 
+
+
+
+    /*
+    * PROPRIEDADES PRIVADAS
+    */
+
+
+
+
+
+    /**
+    * [SetDragElement]
+    * Objeto que está sendo arrastado.
+    *
+    * @private
+    *
+    * @type {Node}
+    */
+    var _dragElement = null;
+
+
+
+
+
+    /**
+    * [SetDragElement]
+    * Correção do eixo Y.
+    *
+    * @private
+    *
+    * @type {Float}
+    */
+    var _cursorY = null;
+
+
+
+
+
+    /**
+    * [SetDragElement]
+    * Correção do eixo X.
+    *
+    * @private
+    *
+    * @type {Float}
+    */
+    var _cursosX = null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    * MÉTODOS PRIVADOS
+    */
+
+
+    /**
+    * [SetDragElement]
+    * Aciona evento Mousemove ao clicar em um elemento que permite ser arrastado.
+    *
+    * @private
+    *
+    * @param {Event}                e                   Evento que disparou o evento.
+    */
+    var _dragOnMouseDown = function (e) {
+        var o = e.target;
+        console.log('dragou');
+
+        if (!o.hasAttribute('data-ccw-drag')) {
+            while (!o.hasAttribute('data-ccw-drag')) {
+                o = o.parentNode;
+            }
+        }
+
+        _cursorY = e.clientY - parseInt(o.style.top.replace('px', ''), 10);
+        _cursosX = e.clientX - parseInt(o.style.left.replace('px', ''), 10);
+
+
+        var bd = document.body.style;
+        var pfx = ['', 'Moz', 'Webkit', 'ms', 'O'];
+        for (var it in pfx) {
+            bd[pfx[it] + 'UserSelect'] = 'none';
+        }
+
+         _dragElement = o;
+        _dom.SetEvent(window, 'mousemove', _moveElemOnMouseMove);
+    };
+    /**
+    * [SetDragElement]
+    * Move elemento clicado junto ao movimento do mouse.
+    *
+    * @private
+    *
+    * @param {Event}                e                   Evento que disparou o evento.
+    */
+    var _moveElemOnMouseMove = function (e) {
+        _dragElement.style.top = (e.clientY - _cursorY) + 'px';
+        _dragElement.style.left = (e.clientX - _cursosX) + 'px';
+    };
+    /**
+    * [SetDragElement]
+    * Remove o evento de arrastar elementos ao soltar o botão do mouse.
+    *
+    * @private
+    */
+    var CMD_StopDragOnMouseUp = function () {
+        _dom.RemoveEvent(window, 'mousemove', _moveElemOnMouseMove);
+
+        _dragElement = null;
+        _cursorY = null;
+        _cursosX = null;
+
+        var bd = document.body.style;
+        var pfx = ['', 'Moz', 'Webkit', 'ms', 'O'];
+        for (var it in pfx) {
+            bd[pfx[it] + 'UserSelect'] = 'initial';
+        }
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
     * OBJETO PÚBLICO QUE SERÁ EXPOSTO.
     */
@@ -386,54 +531,24 @@ CodeCraft.Interface = new (function () {
         * @memberof CodeCraft.Interface
         *
         * @example Exemplo de elemento marcado para ser arrastado.
-        * <div data-cc-dragme="true"> ... </div>
+        * <div data-ccw-drag="true">
+        *     <div data-ccw-drag-pointer></div>
+        * </div>
         */
         SetDragElement: function () {
-            var mElem = null;
-            var cY = null; // Correção de Y
-            var cX = null; // Correção de X
-            var o = document.querySelectorAll('*[data-cc-dragme="true"]');
-
-
-            // Mantem apenas objetos HTML
-            var drags = [];
-            for (var i in o) {
-                if (Object.prototype.toString.call(o[i]).substring(0, 12) == '[object HTML') { drags.push(o[i]); }
-            }
-
-
-            // Aciona evento Mousemove ao clicar em um elemento que permite ser arrastado
-            var CMD_DragOnMouseDown = function (e) {
-                mElem = this;
-
-                cY = e.clientY - parseInt(mElem.style.top.replace('px', ''), 10);
-                cX = e.clientX - parseInt(mElem.style.left.replace('px', ''), 10);
-
-                _dom.SetEvent(window, 'mousemove', CMD_MoveElemOnMouseMove);
-            };
-
-            // Remove o evento de arrastar elementos ao soltar o botão do mouse
-            var CMD_StopDragOnMouseUp = function () {
-                _dom.RemoveEvent(window, 'mousemove', CMD_MoveElemOnMouseMove);
-                mElem = null;
-                cY = null;
-                cX = null;
-            };
-
-            // Move elemento clicado junto ao movimento do mouse
-            var CMD_MoveElemOnMouseMove = function (e) {
-                mElem.style.top = (e.clientY - cY) + 'px';
-                mElem.style.left = (e.clientX - cX) + 'px';
-            };
+            var drags = _dom.Get('[data-ccw-drag="true"]');
 
             // Apenas se houver algum node movel
-            if (drags.length > 0) {
+            if (drags != null) {
                 _dom.SetEvent(window, 'mouseup', CMD_StopDragOnMouseUp);
 
-                for (var i = 0; i < drags.length; i++) {
-                    var elem = drags[i];
-                    elem.style.position = 'absolute';
-                    _dom.SetEvent(elem, 'mousedown', CMD_DragOnMouseDown);
+                for (var it in drags) {
+                    var d = drags[it];
+                    var p = _dom.Get('[data-ccw-drag-pointer]', d);
+                    var o = (p !== null) ? p[0] : d;
+
+                    d.style.position = 'absolute';
+                    _dom.SetEvent(o, 'mousedown', _dragOnMouseDown);
                 }
             }
         }
