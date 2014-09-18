@@ -160,7 +160,7 @@ CodeCraft.Interface = new (function () {
     *
     * @private
     */
-    var CMD_StopDragOnMouseUp = function () {
+    var _stopDragOnMouseUp = function () {
         _dom.RemoveEvent(window, 'mousemove', _moveElemOnMouseMove);
 
         _dragElement = null;
@@ -170,7 +170,7 @@ CodeCraft.Interface = new (function () {
         var bd = document.body.style;
         var pfx = ['', 'Moz', 'Webkit', 'ms', 'O'];
         for (var it in pfx) {
-            bd[pfx[it] + 'UserSelect'] = 'initial';
+            bd[pfx[it] + 'UserSelect'] = 'auto';
         }
     };
 
@@ -540,7 +540,7 @@ CodeCraft.Interface = new (function () {
 
             // Apenas se houver algum node movel
             if (drags != null) {
-                _dom.SetEvent(window, 'mouseup', CMD_StopDragOnMouseUp);
+                _dom.SetEvent(window, 'mouseup', _stopDragOnMouseUp);
 
                 for (var it in drags) {
                     var d = drags[it];
