@@ -547,7 +547,6 @@ CodeCraft.Interface = new (function () {
                     var p = _dom.Get('[data-ccw-drag-pointer]', d);
                     var o = (p !== null) ? p[0] : d;
 
-                    d.style.position = 'absolute';
                     _dom.SetEvent(o, 'mousedown', _dragOnMouseDown);
                 }
             }
