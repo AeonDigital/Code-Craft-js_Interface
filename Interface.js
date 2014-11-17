@@ -121,7 +121,6 @@ CodeCraft.Interface = new (function () {
     */
     var _dragOnMouseDown = function (e) {
         var o = e.target;
-        console.log('dragou');
 
         if (!o.hasAttribute('data-ccw-drag')) {
             while (!o.hasAttribute('data-ccw-drag')) {
