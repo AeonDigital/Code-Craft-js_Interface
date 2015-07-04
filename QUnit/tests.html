@@ -10,6 +10,30 @@
         <script src="https://rawgit.com/AeonDigital/Code-Craft-js_BasicTools/master/BasicTools.js"></script>
         <script src="https://rawgit.com/AeonDigital/Code-Craft-js_BasicDOM/master/BasicDOM.js"></script>
         <script src="../Interface.js"></script>
+
+        <style>
+            [data-ccw-resize] {
+                /*border: 1px dashed #000;*/
+                position: absolute;
+                
+                background-color: #FFF;
+            }
+            [data-ccw-resize-pointer] {
+                width: 6px;
+                height: 6px;
+                background-color: #FFF;
+                border: 1px solid #000;
+                position: absolute;
+            }
+            [data-ccw-resize-pointer="nw"] { left: -3px; top: -3px; cursor: nw-resize; }
+            [data-ccw-resize-pointer="ne"] { top: -3px; right: -3px; cursor: ne-resize; }
+            [data-ccw-resize-pointer="sw"] { bottom: -3px; left: -3px; cursor: sw-resize; }
+            [data-ccw-resize-pointer="se"] { bottom: -3px; right: -3px; cursor: se-resize; }
+            [data-ccw-resize-pointer="n"] { top: -3px; left: 50%; cursor: n-resize; }
+            [data-ccw-resize-pointer="s"] { bottom: -3px; left: 50%; cursor: s-resize; }
+            [data-ccw-resize-pointer="w"] { left: -3px; top:calc(50% - 3px); cursor: w-resize; }
+            [data-ccw-resize-pointer="e"] { right: -3px; top:calc(50% - 3px); cursor: e-resize; }
+        </style>
     </head>
     <body>
         <div id="qunit"></div>
@@ -103,6 +127,7 @@
             var newDiv = document.createElement('div');
             newDiv.id = 'newDiv';
             newDiv.setAttribute('data-ccw-drag', 'true');
+            newDiv.setAttribute('data-ccw-resize', '');
             newDiv.style.cssFloat = 'left';
             newDiv.style.width = '100px';
             newDiv.style.height = '100px';
@@ -183,7 +208,7 @@
                     newDiv.style.left = '150px';
                     newDiv.style.top = '50px';
                     Interface.SetDragElement();
-                    Interface.SetDragElement();
+                    Interface.SetResizeElement();
                 }
             });
 
