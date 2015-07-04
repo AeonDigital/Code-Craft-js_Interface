@@ -12,26 +12,46 @@
         <style>
             body {margin: 0; padding: 0;}
             [data-ccw-resize] {
-                border: 1px dashed #000;
                 position: absolute;
-                
+                z-index: 2;
+
+                border: 1px dashed #000;
+                box-sizing: border-box;
+
                 background-color: #FFF;
             }
             [data-ccw-resize-pointer] {
-                width: 6px;
-                height: 6px;
-                background-color: #FFF;
-                border: 1px solid #000;
+                width: 8px;
+                height: 8px;
+
                 position: absolute;
+                z-index: 2;
+                
+                border: 1px solid #000;
+                box-sizing: border-box;
+                
+                background-color: #FFF;
             }
-            [data-ccw-resize-pointer="nw"] { left: -3px; top: -3px; cursor: nw-resize; }
-            [data-ccw-resize-pointer="ne"] { top: -3px; right: -3px; cursor: ne-resize; }
-            [data-ccw-resize-pointer="sw"] { bottom: -3px; left: -3px; cursor: sw-resize; }
-            [data-ccw-resize-pointer="se"] { bottom: -3px; right: -3px; cursor: se-resize; }
-            [data-ccw-resize-pointer="n"] { top: -3px; left: 50%; cursor: n-resize; }
-            [data-ccw-resize-pointer="s"] { bottom: -3px; left: 50%; cursor: s-resize; }
-            [data-ccw-resize-pointer="w"] { left: -3px; top:calc(50% - 3px); cursor: w-resize; }
-            [data-ccw-resize-pointer="e"] { right: -3px; top:calc(50% - 3px); cursor: e-resize; }
+            [data-ccw-resize-pointer="nw"] { left: -4px; top: -4px; cursor: nw-resize; }
+            [data-ccw-resize-pointer="ne"] { top: -4px; right: -4px; cursor: ne-resize; }
+            [data-ccw-resize-pointer="sw"] { bottom: -4px; left: -4px; cursor: sw-resize; }
+            [data-ccw-resize-pointer="se"] { bottom: -4px; right: -4px; cursor: se-resize; }
+            [data-ccw-resize-pointer="n"] { top: -4px; left:calc(50% - 4px); cursor: n-resize; }
+            [data-ccw-resize-pointer="s"] { bottom: -4px; left:calc(50% - 4px); cursor: s-resize; }
+            [data-ccw-resize-pointer="w"] { left: -4px; top:calc(50% - 4px); cursor: w-resize; }
+            [data-ccw-resize-pointer="e"] { right: -4px; top:calc(50% - 4px); cursor: e-resize; }
+            
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="nw"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="ne"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="sw"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="n"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="s"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="w"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="e"] {display: none;}
+            
+            [data-ccw-resize-limit] {
+                overflow: hidden;
+            }
         </style>
     </head>
     <body>
@@ -42,11 +62,15 @@
             <div    data-ccw-drag="true" 
                     data-ccw-resize="" 
                     data-ccw-resize-onactive="_eventOnActive"
-                    style="width: 150px; height: 150px; top: 150px; left: 150px;">
+                    
+                    data-ccw-resize-max="600px 400px"
+                    data-ccw-resize-min="60px 40px"
+                    style="width: 120px; height: 80px; top: 150px; left: 150px;">
                 <h1 style="text-align: center">!</h1>
             </div>
 
         </div>
+
 
         <script>
             // <![CDATA[
@@ -54,7 +78,12 @@
             var Interface = CodeCraft.Interface;
 
 
-
+            /*
+            - tamanhos exatos           [data-ccw-resize-fix="200px 75px"]
+            - tamanhos máximos          [data-ccw-resize-max="500px 250px"]
+            - tamanhos mínimos          [data-ccw-resize-min="100px 50px"]
+            - tamanhos proporcionais    [data-ccw-resize-ratio="3:2"]
+            */
             var _eventOnActive = function (e) {
                 //console.log(e);
             };

@@ -52,6 +52,24 @@ CodeCraft.Interface = new (function () {
 
 
 
+    /**
+    * Objeto que traz informações sobre as coordenadas e dimensões de um objeto.
+    * 
+    * @type {InterfaceData}
+    *
+    * @property {Integer}               Y                           Coordenada Y do elemento com relação à margem superior do display.
+    * @property {Integer}               X                           Coordenada X do elemento com relação à margem esquerda do display.
+    * @property {Integer}               icY                         Coordenada inicial do cursor no eixo Y.
+    * @property {Integer}               icX                         Coordenada inicial do cursor no eixo X.
+    * @property {Integer}               T                           Valor da propriedade "top" do elemento.
+    * @property {Integer}               L                           Valor da propriedade "left" do elemento.
+    * @property {Integer}               H                           Valor da propriedade "height" do elemento.
+    * @property {Integer}               W                           Valor da propriedade "width" do elemento.
+    */
+
+
+
+
 
 
     /**
@@ -82,29 +100,11 @@ CodeCraft.Interface = new (function () {
         */
         onActive: null,
         /**
-        * Posição inicial do eixo Y ao iniciar a mover.
+        * Traz informações completas sobre as coordenadas do elemento.
         *
-        * @type {Float}
+        * @type {InterfaceData}
         */
-        iniY: null,
-        /**
-        * Correção do eixo X.
-        *
-        * @type {Float}
-        */
-        iniX: null,
-        /**
-        * Posição "top" inicial do objeto ao iniciar a mover.
-        *
-        * @type {Float}
-        */
-        iniT: null,
-        /**
-        * Posição "left" inicial do objeto ao iniciar a mover.
-        *
-        * @type {Float}
-        */
-        iniL: null
+        idata: null
     };
 
 
@@ -150,29 +150,23 @@ CodeCraft.Interface = new (function () {
         */
         direction: null,
         /**
-        * Posição inicial do eixo Y ao iniciar o redimensionamento.
+        * Traz informações completas sobre as coordenadas do elemento que está sendo redimensionado.
         *
-        * @type {Float}
+        * @type {InterfaceData}
         */
-        iniY: null,
+        idata: null,
         /**
-        * Posição inicial do eixo X ao iniciar o redimensionamento.
+        * Traz informações completas sobre as coordenadas do elemento que limita o movimento.
         *
-        * @type {Float}
+        * @type {InterfaceData}
         */
-        iniX: null,
+        ldata: null,
         /**
-        * Altura inicial do objeto ao iniciar o redimensionamento.
+        * Razão que deve ser respeitada ao redimensionar o objeto.
         *
-        * @type {Float}
+        * @type {Object}
         */
-        iniH: null,
-        /**
-        * Largura inicial do objeto ao iniciar o redimensionamento.
-        *
-        * @type {Float}
-        */
-        iniW: null
+        ratio: null
     };
 
 
@@ -197,6 +191,45 @@ CodeCraft.Interface = new (function () {
     /*
     * MÉTODOS PRIVADOS
     */
+
+
+
+
+    /** 
+    * Habilita ou desabilita a possibilidade de selecionar conteúdo da página.
+    *
+    * @private
+    *
+    * @param {Boolean}              a                   Indica se é para ativar ou desativar a seleção.
+    */
+    var _bodyContentSelection = function (a) {
+
+        var set = (a) ? 'auto' : 'none';
+        var bd = document.body.style;
+        var pfx = ['', 'Moz', 'Webkit', 'ms', 'O'];
+        for (var it in pfx) {
+            bd[pfx[it] + 'UserSelect'] = set;
+        }
+
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -228,16 +261,16 @@ CodeCraft.Interface = new (function () {
 
 
         // Armazena as referencias de valores iniciais
-        _drag.iniY = e.clientY;
-        _drag.iniX = e.clientX;
-        _drag.iniT = parseInt(o.style.top.replace('px', ''), 10);
-        _drag.iniL = parseInt(o.style.left.replace('px', ''), 10);
+        _drag.element = o;
+        _drag.idata = _public.GetInterfaceData(o, e);
+        _drag.limit = { 'axis': null };
 
 
 
         // Existindo um elemento que demarque os limites dentro dos quais
         // o objeto a ser movido pode ir...
         if (l != null) {
+            var i = _drag.idata;
 
             // Resgata largura e altura do node que demarca o limite
             // para a ação "drag".
@@ -245,40 +278,28 @@ CodeCraft.Interface = new (function () {
             var lW = parseInt(l.style.width.replace('px', ''), 10);
 
 
-            // Verifica a posição relativa do node que está sendo movido.
-            var y = parseInt(o.style.top.replace('px', ''), 10);
-            var x = parseInt(o.style.left.replace('px', ''), 10);
-
-
-            // Resgata largura e altura do objeto que está sendo movido.
-            var w = parseInt(o.style.width.replace('px', ''), 10);
-            var h = parseInt(o.style.height.replace('px', ''), 10);
-
-
-            var minY = e.clientY - y;
-            var maxY = lH - (h - minY);
-            var minX = e.clientX - x;
-            var maxX = lW - (w - minX);
-            var lminY = 0;
-            var lmaxY = maxY;
-            var lminX = 0;
-            var lmaxX = maxX;
+            var minY = i.icY - i.T;
+            var maxY = lH - (i.H - minY);
+            var minX = i.icX - i.L;
+            var maxX = lW - (i.W - minX);
 
 
             // Armazena os valores dos limites
             _drag.limit = {
-                // A coordenada mínima que o ponteiro do mouse deve estar para que o movimento seja 
-                // transferido para o objeto é:
-                minY: minY,
-                maxY: maxY,
-                minX: minX,
-                maxX: maxX,
+                'axis': {
+                    // A coordenada mínima que o ponteiro do mouse deve estar para que o movimento seja 
+                    // transferido para o objeto é:
+                    minY: minY,
+                    maxY: maxY,
+                    minX: minX,
+                    maxX: maxX,
 
-                // Limiareas máximos e mínimos
-                lminY: 0,
-                lmaxY: maxY - minY,
-                lminX: 0,
-                lmaxX: maxX - minX
+                    // Limiareas máximos e mínimos
+                    lminY: 0,
+                    lmaxY: maxY - minY,
+                    lminX: 0,
+                    lmaxX: maxX - minX
+                }
             };
         }
 
@@ -291,14 +312,7 @@ CodeCraft.Interface = new (function () {
 
 
 
-        // Impede a seleção do conteúdo da div que está sendo alterada
-        var bd = document.body.style;
-        var pfx = ['', 'Moz', 'Webkit', 'ms', 'O'];
-        for (var it in pfx) {
-            bd[pfx[it] + 'UserSelect'] = 'none';
-        }
-
-        _drag.element = o;
+        _bodyContentSelection(false);
         _dom.SetEvent(window, 'mousemove', _moveElemOnMouseMove);
     };
     /**
@@ -310,22 +324,26 @@ CodeCraft.Interface = new (function () {
     * @param {Event}                e                   Evento que disparou o evento.
     */
     var _moveElemOnMouseMove = function (e) {
-        var nT = (_drag.iniT + (e.clientY - _drag.iniY));
-        var nL = (_drag.iniL + (e.clientX - _drag.iniX));
-        var setT = (_drag.limit == null || (e.clientY > _drag.limit.minY && e.clientY < _drag.limit.maxY));
-        var setL = (_drag.limit == null || (e.clientX > _drag.limit.minX && e.clientX < _drag.limit.maxX));
+        var i = _drag.idata;
+        var l = _drag.limit.axis;
+
+
+        var nT = (i.T + (e.clientY - i.icY));
+        var nL = (i.L + (e.clientX - i.icX));
+        var setT = (l == null || (e.clientY > l.minY && e.clientY < l.maxY));
+        var setL = (l == null || (e.clientX > l.minX && e.clientX < l.maxX));
 
 
         // Verifica se deve setar o limiar da posição Y
-        if (_drag.limit != null && setT == false) {
-            if (e.clientY < _drag.limit.minY) { nT = _drag.limit.lminY; setT = true; }
-            if (e.clientY > _drag.limit.maxY) { nT = _drag.limit.lmaxY; setT = true; }
+        if (l != null && setT == false) {
+            if (e.clientY < l.minY) { nT = l.lminY; setT = true; }
+            if (e.clientY > l.maxY) { nT = l.lmaxY; setT = true; }
         }
 
         // Verifica se deve setar o limiar da posição X
-        if (_drag.limit != null && setL == false) {
-            if (e.clientX < _drag.limit.minX) { nL = _drag.limit.lminX; setL = true; }
-            if (e.clientX > _drag.limit.maxX) { nL = _drag.limit.lmaxX; setL = true; }
+        if (l != null && setL == false) {
+            if (e.clientX < l.minX) { nL = l.lminX; setL = true; }
+            if (e.clientX > l.maxX) { nL = l.lmaxX; setL = true; }
         }
 
         if (setT) { _drag.element.style.top = nT + 'px'; }
@@ -349,16 +367,10 @@ CodeCraft.Interface = new (function () {
         _drag.element = null;
         _drag.limit = null;
         _drag.onActive = null;
-        _drag.iniY = null;
-        _drag.iniX = null;
+        _drag.idata = null;
 
 
-        // Permite novamente a seleção do conteúdo
-        var bd = document.body.style;
-        var pfx = ['', 'Moz', 'Webkit', 'ms', 'O'];
-        for (var it in pfx) {
-            bd[pfx[it] + 'UserSelect'] = 'auto';
-        }
+        _bodyContentSelection(true);
     };
 
 
@@ -409,39 +421,70 @@ CodeCraft.Interface = new (function () {
 
 
         // Armazena as referencias de valores iniciais
+        _resize.element = o;
         _resize.direction = e.target.getAttribute('data-ccw-resize-pointer');
-        _resize.iniY = e.clientY;
-        _resize.iniX = e.clientX;
-        _resize.iniT = parseInt(o.style.top.replace('px', ''), 10);
-        _resize.iniL = parseInt(o.style.left.replace('px', ''), 10);
-        _resize.iniH = parseInt(o.style.height.replace('px', ''), 10);
-        _resize.iniW = parseInt(o.style.width.replace('px', ''), 10);
+        _resize.idata = _public.GetInterfaceData(o, e);
+        _resize.limit = { 'axis': null, 'dim': null };
 
 
 
         // Existindo um elemento que demarque os limites dentro dos quais
         // o objeto a ser redimensionado pode ir...
         if (l != null) {
+            _resize.ldata = _public.GetInterfaceData(l);
 
-            // Resgata largura e altura do node que demarca o limite
-            // para a ação "resize".
-            var lH = parseInt(l.style.height.replace('px', ''), 10);
-            var lW = parseInt(l.style.width.replace('px', ''), 10);
-
-
-            // Resgata as posições absolutas do node que demarca
-            // o limite para a ação "resize"
-            var lY = CodeCraft.Interface.GetScrollY(l);
-            var lX = CodeCraft.Interface.GetScrollX(l);
+            var i = _resize.idata;
+            var ld = _resize.ldata;
 
 
-            // Armazena os valores dos limites
             _resize.limit = {
-                minY: lY,
-                maxY: lY + lH,
-                minX: lX,
-                maxX: lX + lW
+                'axis': {
+                    minY: ld.Y,
+                    maxY: ld.Y + ld.H,
+                    minX: ld.X,
+                    maxX: ld.X + ld.W
+                },
+                'dim': {
+                    // Verifica as dimensões máximas que podem ser definidas em cada direção.
+                    maxW: ld.W,
+                    maxH: ld.H,
+                    minW: 1,
+                    minH: 1,
+                    maxW_e: ld.W + ld.X - i.X + 1,
+                    maxW_w: i.X + i.W - ld.X - 1,
+                    maxH_n: i.Y - ld.Y + i.H - 1,
+                    maxH_s: ld.H - i.T
+                }
             };
+        }
+
+
+
+        //
+        // Verifica configurações especiais como:
+        //
+        // [data-ccw-resize-max]    "(maxW)px (maxH)px"     Define os valores máximos que o elemento pode vir a ter.
+        // [data-ccw-resize-min]    "(maxW)px (maxH)px"     Define os valores mínimos que o elemento pode vir a ter.
+        //
+        if (o.hasAttribute('data-ccw-resize-max')) {
+            var dim = o.getAttribute('data-ccw-resize-max').split(' ');
+            if (dim.length == 2) {
+                _resize.limit.dim.maxW = parseInt(dim[0].replace('px', ''));
+                _resize.limit.dim.maxH = parseInt(dim[1].replace('px', ''));
+            }
+        }
+        if (o.hasAttribute('data-ccw-resize-min')) {
+            var dim = o.getAttribute('data-ccw-resize-min').split(' ');
+            if (dim.length == 2) {
+                _resize.limit.dim.minW = parseInt(dim[0].replace('px', ''));
+                _resize.limit.dim.minH = parseInt(dim[1].replace('px', ''));
+            }
+        }
+        if (o.hasAttribute('data-ccw-resize-ratio')) {
+            var r = o.getAttribute('data-ccw-resize-ratio').split(':');
+            if (r.length == 2) {
+                _resize.ratio = { W: r[0], H: r[1] };
+            }
         }
 
 
@@ -453,16 +496,35 @@ CodeCraft.Interface = new (function () {
 
 
 
-        // Impede a seleção do conteúdo da div que está sendo alterada
-        var bd = document.body.style;
-        var pfx = ['', 'Moz', 'Webkit', 'ms', 'O'];
-        for (var it in pfx) {
-            bd[pfx[it] + 'UserSelect'] = 'none';
-        }
-
-        _resize.element = o;
+        _bodyContentSelection(false);
         _dom.SetEvent(window, 'mousemove', _resizeOnMouseMove);
         _dom.SetEvent(window, 'mouseup', _stopResizeOnMouseUp);
+    };
+    /**
+    * [SetResizeElement]
+    * Recalcula os valores para "W" e "H" do objeto que está sendo redimensionado.
+    * a partir da dimensão passada.
+    *
+    * @private
+    *
+    * @param {Object}               d                   Objeto da dimensão fixa para o calculo.
+    */
+    var _resizeCalcRatio = function (d) {
+
+        if (_resize.ratio != null) {
+
+            // Se foi definido um valor para "W", calcula "H"
+            if (d.W !== undefined) {
+                var nH = (d.W / _resize.ratio.W) * _resize.ratio.H;
+                _resize.element.style.height = nH + 'px';
+            }
+            // Senão, se foi definido um valor para "H", calcula o "W"
+            else if (d.H !== undefined) {
+                var nW = (d.H / _resize.ratio.H) * _resize.ratio.W;
+                _resize.element.style.width = nW + 'px';
+            }
+
+        }
     };
     /**
     * [SetResizeElement]
@@ -473,13 +535,22 @@ CodeCraft.Interface = new (function () {
     * @param {Event}                e                   Evento que disparou o evento.
     */
     var _resizeToDirection_N = function (e) {
-        if (e.clientY > 0 && (_resize.limit == null || (e.clientY > _resize.limit.minY))) {
-            var difY = (e.clientY - _resize.iniY);
+        var la = _resize.limit.axis;
+        var ld = _resize.limit.dim;
+        var nT = null;
+        var nH = null;
+
+
+
+        if (e.clientY > 0 && (la == null || (e.clientY > la.minY))) {
+            var i = _resize.idata;
+
+            var difY = (e.clientY - i.icY);
             var difH = 0;
 
             // Se a posição Y do mouse é menor que a posição inicial...
             // o quadro deve aumentar
-            if (e.clientY < _resize.iniY) {
+            if (e.clientY < i.icY) {
                 difH = (difY < 0) ? difY * -1 : difY;
             }
             // Senão, se a posição Y do mouse é maior que a posição inicial...
@@ -489,13 +560,41 @@ CodeCraft.Interface = new (function () {
             }
 
 
-            var nTop = _resize.iniT + difY;
-            var nHei = _resize.iniH + difH;
+            var nTop = i.T + difY;
+            var nHei = i.H + difH;
 
 
             if (nHei >= 0 && nTop >= 0) {
-                _resize.element.style.top = nTop + 'px';
-                _resize.element.style.height = nHei + 'px';
+                nT = nTop;
+                nH = nHei;
+            }
+        }
+        // Verifica se extrapolou o limite
+        else {
+            if (la != null && (e.clientY < _resize.ldata.Y)) {
+                nT = 0;
+                nH = ld.maxH_n;
+            }
+        }
+
+
+
+        // Encontrando valores para serem setados...
+        if (nT != null && nH != null) {
+            // Se há um limites para "H"...
+            var sT = true;
+            if (ld != null) {
+                if (nH > ld.maxH) { nH = ld.maxH; sT = false; }
+                else if (nH < ld.minH) { nH = ld.minH; sT = false; }
+            }
+
+
+
+
+
+            _resize.element.style.height = nH + 'px';
+            if (sT) {
+                _resize.element.style.top = nT + 'px';
             }
         }
     };
@@ -508,13 +607,22 @@ CodeCraft.Interface = new (function () {
     * @param {Event}                e                   Evento que disparou o evento.
     */
     var _resizeToDirection_W = function (e) {
-        if (e.clientX > 0 && (_resize.limit == null || (e.clientX > _resize.limit.minX))) {
-            var difX = (e.clientX - _resize.iniX);
+        var la = _resize.limit.axis;
+        var ld = _resize.limit.dim;
+        var nL = null;
+        var nW = null;
+
+
+
+        if (e.clientX > 0 && (la == null || (e.clientX > la.minX))) {
+            var i = _resize.idata;
+
+            var difX = (e.clientX - i.icX);
             var difW = 0;
 
             // Se a posição Y do mouse é menor que a posição inicial...
             // o quadro deve aumentar
-            if (e.clientX < _resize.iniX) {
+            if (e.clientX < i.icX) {
                 difW = (difX < 0) ? difX * -1 : difX;
             }
             // Senão, se a posição Y do mouse é maior que a posição inicial...
@@ -523,12 +631,37 @@ CodeCraft.Interface = new (function () {
                 difW = (difX > 0) ? difX * -1 : difX;
             }
 
-            var nLef = _resize.iniL + difX;
-            var nWid = _resize.iniW + difW;
+            var nLef = i.L + difX;
+            var nWid = i.W + difW;
 
             if (nWid >= 0 && nLef >= 0) {
-                _resize.element.style.left = nLef + 'px';
-                _resize.element.style.width = nWid + 'px';
+                nL = nLef;
+                nW = nWid;
+            }
+        }
+        // Verifica se extrapolou o limite
+        else {
+            if (la != null && (e.clientX < _resize.ldata.X)) {
+                nL = 0;
+                nW = ld.maxW_w;
+            }
+        }
+
+
+
+        // Encontrando valores para serem setados...
+        if (nL != null && nW != null) {
+            // Se há um limites para "W"...
+            var sL = true;
+            if (ld != null) {
+                if (nW > ld.maxW) { nW = ld.maxW; sL = false; }
+                else if (nW < ld.minW) { nW = ld.minW; sL = false; }
+            }
+
+
+            _resize.element.style.width = nW + 'px';
+            if (sL) {
+                _resize.element.style.left = nL + 'px';
             }
         }
     };
@@ -541,8 +674,30 @@ CodeCraft.Interface = new (function () {
     * @param {Event}                e                   Evento que disparou o evento.
     */
     var _resizeToDirection_S = function (e) {
-        if (_resize.limit == null || (e.clientY <= _resize.limit.maxY)) {
-            _resize.element.style.height = (_resize.iniH + (e.clientY - _resize.iniY)) + 'px';
+        var i = _resize.idata;
+        var la = _resize.limit.axis;
+        var ld = _resize.limit.dim;
+        var nH = null;
+
+
+        // Se não há limites "X-Y" definidos, ou se os mesmos não foram extrapolados...
+        if (la == null || (e.clientY <= la.maxY)) {
+            nH = (i.H + (e.clientY - i.icY));
+        }
+        // Verifica se extrapolou o limite...
+        else if (la != null && (e.clientY > la.maxY)) {
+            nH = ld.maxH_s;
+        }
+
+        // Apenas se foi possível calcular o novo "H"
+        if (nH != null) {
+            // Se há um limites para "H"...
+            if (ld != null) {
+                if (nH > ld.maxH) { nH = ld.maxH; }
+                else if (nH < ld.minH) { nH = ld.minH; }
+            }
+
+            _resize.element.style.height = nH + 'px';
         }
     };
     /**
@@ -554,8 +709,31 @@ CodeCraft.Interface = new (function () {
     * @param {Event}                e                   Evento que disparou o evento.
     */
     var _resizeToDirection_E = function (e) {
-        if (_resize.limit == null || (e.clientX <= _resize.limit.maxX)) {
-            _resize.element.style.width = (_resize.iniW + (e.clientX - _resize.iniX)) + 'px';
+        var i = _resize.idata;
+        var la = _resize.limit.axis;
+        var ld = _resize.limit.dim;
+        var nW = null;
+
+
+        // Se não há limites "X-Y" definidos, ou se os mesmos não foram extrapolados...
+        if (la == null || (e.clientX <= la.maxX)) {
+            nW = (i.W + (e.clientX - i.icX));
+        }
+        // Verifica se extrapolou o limite...
+        else if (la != null && (e.clientX > la.maxX)) {
+            nW = ld.maxW_e;
+        }
+
+        // Apenas se foi possível calcular o novo "W"
+        if (nW != null) {
+            // Se há um limites para "W"...
+            if (ld != null) {
+                if (nW > ld.maxW) { nW = ld.maxW; }
+                else if (nW < ld.minW) { nW = ld.minW; }
+            }
+
+            _resize.element.style.width = nW + 'px';
+            _resizeCalcRatio({ W: nW });
         }
     };
     /**
@@ -624,18 +802,12 @@ CodeCraft.Interface = new (function () {
         _resize.element = null;
         _resize.onActive = null;
         _resize.direction = null;
-        _resize.iniY = null;
-        _resize.iniX = null;
-        _resize.iniH = null;
-        _resize.iniW = null;
+        _resize.idata = null;
+        _resize.ldata = null;
+        _resize.ratio = null;
 
 
-        // Permite novamente a seleção do conteúdo
-        var bd = document.body.style;
-        var pfx = ['', 'Moz', 'Webkit', 'ms', 'O'];
-        for (var it in pfx) {
-            bd[pfx[it] + 'UserSelect'] = 'auto';
-        }
+        _bodyContentSelection(true);
     };
 
 
@@ -656,6 +828,42 @@ CodeCraft.Interface = new (function () {
     * OBJETO PÚBLICO QUE SERÁ EXPOSTO.
     */
     var _public = this.Control = {
+        /**
+        * Retorna um objeto "InterfaceData" com os dados do elemento alvo.
+        * Propriedades que não estejam setadas, serão iniciadas.
+        *
+        * @function GetCoordenates
+        *
+        * @memberof CodeCraft.Interface
+        *
+        * @param {Node}                             o                                   Objeto alvo.
+        * @param {Event}                            [e]                                 Evento que disparou o evento.
+        *
+        * @return {InterfaceData}
+        */
+        GetInterfaceData: function (o, e) {
+            if (o.style.top == '') { o.style.top = '0px'; }
+            if (o.style.left == '') { o.style.left = '0px'; }
+            if (o.style.height == '') { o.style.height = parseInt(o.offsetHeight, 10) + 'px'; }
+            if (o.style.width == '') { o.style.width = parseInt(o.offsetWidth, 10) + 'px'; }
+
+
+            return {
+                Y: _public.GetScrollY(o),
+                X: _public.GetScrollX(o),
+                icY: (e !== undefined) ? e.clientY : null,
+                icX: (e !== undefined) ? e.clientX : null,
+                T: parseInt(o.style.top.replace('px', '')),
+                L: parseInt(o.style.left.replace('px', '')),
+                H: parseInt(o.style.height.replace('px', '')),
+                W: parseInt(o.style.width.replace('px', ''))
+            };
+        },
+
+
+
+
+
         /**
         * Aponta os links externos para abrirem em nova página.
         *
@@ -1028,31 +1236,39 @@ CodeCraft.Interface = new (function () {
         * @memberof CodeCraft.Interface
         *
         * @example Exemplo de elemento marcado para ser redimensionado.
-        * <div data-ccw-resize="" style="width: 150px; height: 150px; top: 150px; left: 150px;">
-        * </div>
+        * <div data-ccw-resize="" style="width: 150px; height: 150px; top: 150px; left: 150px;"></div>
+        *
         *
         * CSS
         * [data-ccw-resize] {
-        *     border: 1px dashed #000;
         *     position: absolute;
-        *                
+        *     z-index: 2;
+        * 
+        *     border: 1px dashed #000;
+        *     box-sizing: border-box;
+        * 
         *     background-color: #FFF;
         * }
         * [data-ccw-resize-pointer] {
-        *     width: 6px;
-        *     height: 6px;
-        *     background-color: #FFF;
-        *     border: 1px solid #000;
+        *     width: 8px;
+        *     height: 8px;
+        * 
         *     position: absolute;
+        *     z-index: 2;
+        *                 
+        *     border: 1px solid #000;
+        *     box-sizing: border-box;
+        *                 
+        *     background-color: #FFF;
         * }
-        * [data-ccw-resize-pointer="nw"] { left: -3px; top: -3px; cursor: nw-resize; }
-        * [data-ccw-resize-pointer="ne"] { top: -3px; right: -3px; cursor: ne-resize; }
-        * [data-ccw-resize-pointer="sw"] { bottom: -3px; left: -3px; cursor: sw-resize; }
-        * [data-ccw-resize-pointer="se"] { bottom: -3px; right: -3px; cursor: se-resize; }
-        * [data-ccw-resize-pointer="n"] { top: -3px; left: 50%; cursor: n-resize; }
-        * [data-ccw-resize-pointer="s"] { bottom: -3px; left: 50%; cursor: s-resize; }
-        * [data-ccw-resize-pointer="w"] { left: -3px; top:calc(50% - 3px); cursor: w-resize; }
-        * [data-ccw-resize-pointer="e"] { right: -3px; top:calc(50% - 3px); cursor: e-resize; }
+        * [data-ccw-resize-pointer="nw"] { left: -4px; top: -4px; cursor: nw-resize; }
+        * [data-ccw-resize-pointer="ne"] { top: -4px; right: -4px; cursor: ne-resize; }
+        * [data-ccw-resize-pointer="sw"] { bottom: -4px; left: -4px; cursor: sw-resize; }
+        * [data-ccw-resize-pointer="se"] { bottom: -4px; right: -4px; cursor: se-resize; }
+        * [data-ccw-resize-pointer="n"] { top: -4px; left:calc(50% - 4px); cursor: n-resize; }
+        * [data-ccw-resize-pointer="s"] { bottom: -4px; left:calc(50% - 4px); cursor: s-resize; }
+        * [data-ccw-resize-pointer="w"] { left: -4px; top:calc(50% - 4px); cursor: w-resize; }
+        * [data-ccw-resize-pointer="e"] { right: -4px; top:calc(50% - 4px); cursor: e-resize; }
         */
         SetResizeElement: function () {
             var resizes = _dom.Get('[data-ccw-resize]');
@@ -1067,26 +1283,38 @@ CodeCraft.Interface = new (function () {
                     var pointers = _dom.Get('[data-ccw-resize-pointer]', tgt);
 
 
-                    // Caso os ponteiros não tenham sido definidos no corpo do HTML, 
-                    // cria-os dinamicamente.
-                    if (pointers == null) {
-                        var p = ['nw', 'ne', 'sw', 'se', 'n', 's', 'w', 'e'];
+                    // Estando o redimensionamento marcado como "fixo"...
+                    if (tgt.hasAttribute('data-ccw-resize-fix')) {
+                        var dim = tgt.getAttribute('data-ccw-resize-fix').split(' ');
+                        if (dim.length == 2) {
+                            tgt.style.width = dim[0];
+                            tgt.style.height = dim[1];
+                        }
+                    }
+                    else {
 
-                        for (var ii in p) {
-                            var nDiv = document.createElement('div');
-                            nDiv.setAttribute('data-ccw-resize-pointer', p[ii]);
-                            tgt.appendChild(nDiv);
+                        // Caso os ponteiros não tenham sido definidos no corpo do HTML, 
+                        // cria-os dinamicamente.
+                        if (pointers == null) {
+                            var p = ['nw', 'ne', 'sw', 'se', 'n', 's', 'w', 'e'];
+
+                            for (var ii in p) {
+                                var nDiv = document.createElement('div');
+                                nDiv.setAttribute('data-ccw-resize-pointer', p[ii]);
+                                tgt.appendChild(nDiv);
+                            }
+
+                            pointers = _dom.Get('[data-ccw-resize-pointer]', tgt);
                         }
 
-                        pointers = _dom.Get('[data-ccw-resize-pointer]', tgt);
+
+
+                        // Seta os eventos para redimensionar o elemento
+                        for (var ii in pointers) {
+                            _dom.SetEvent(pointers[ii], 'mousedown', _resizeOnMouseDown);
+                        }
                     }
 
-
-
-                    // Seta os eventos para redimensionar o elemento
-                    for (var ii in pointers) {
-                        _dom.SetEvent(pointers[ii], 'mousedown', _resizeOnMouseDown);
-                    }
                 }
 
             }
