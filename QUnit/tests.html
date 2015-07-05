@@ -13,17 +13,28 @@
 
         <style>
             [data-ccw-resize] {
-                /*border: 1px dashed #000;*/
                 position: absolute;
-                
+                z-index: 2;
+
+                /*border: 1px dashed #000;*/
+                box-sizing: border-box;
+
                 background-color: #FFF;
             }
+            [data-ccw-resize-limit] {
+                overflow: hidden;
+            }
             [data-ccw-resize-pointer] {
-                width: 6px;
-                height: 6px;
-                background-color: #FFF;
-                border: 1px solid #000;
+                width: 8px;
+                height: 8px;
+
                 position: absolute;
+                z-index: 2;
+                
+                border: 1px solid #000;
+                box-sizing: border-box;
+                
+                background-color: #FFF;
             }
             [data-ccw-resize-pointer="nw"] { left: -4px; top: -4px; cursor: nw-resize; }
             [data-ccw-resize-pointer="ne"] { top: -4px; right: -4px; cursor: ne-resize; }
@@ -33,6 +44,14 @@
             [data-ccw-resize-pointer="s"] { bottom: -4px; left:calc(50% - 4px); cursor: s-resize; }
             [data-ccw-resize-pointer="w"] { left: -4px; top:calc(50% - 4px); cursor: w-resize; }
             [data-ccw-resize-pointer="e"] { right: -4px; top:calc(50% - 4px); cursor: e-resize; }
+            
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="nw"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="ne"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="sw"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="n"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="s"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="w"],
+            [data-ccw-resize-ratio] [data-ccw-resize-pointer="e"] {display: none;}
         </style>
     </head>
     <body>

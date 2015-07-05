@@ -1240,6 +1240,7 @@ CodeCraft.Interface = new (function () {
         *
         *
         * CSS
+        * body {margin: 0; padding: 0;}
         * [data-ccw-resize] {
         *     position: absolute;
         *     z-index: 2;
@@ -1248,6 +1249,9 @@ CodeCraft.Interface = new (function () {
         *     box-sizing: border-box;
         * 
         *     background-color: #FFF;
+        * }
+        * [data-ccw-resize-limit] {
+        *     overflow: hidden;
         * }
         * [data-ccw-resize-pointer] {
         *     width: 8px;
@@ -1269,6 +1273,15 @@ CodeCraft.Interface = new (function () {
         * [data-ccw-resize-pointer="s"] { bottom: -4px; left:calc(50% - 4px); cursor: s-resize; }
         * [data-ccw-resize-pointer="w"] { left: -4px; top:calc(50% - 4px); cursor: w-resize; }
         * [data-ccw-resize-pointer="e"] { right: -4px; top:calc(50% - 4px); cursor: e-resize; }
+        *             
+        * [data-ccw-resize-ratio] [data-ccw-resize-pointer="nw"],
+        * [data-ccw-resize-ratio] [data-ccw-resize-pointer="ne"],
+        * [data-ccw-resize-ratio] [data-ccw-resize-pointer="sw"],
+        * [data-ccw-resize-ratio] [data-ccw-resize-pointer="n"],
+        * [data-ccw-resize-ratio] [data-ccw-resize-pointer="s"],
+        * [data-ccw-resize-ratio] [data-ccw-resize-pointer="w"],
+        * [data-ccw-resize-ratio] [data-ccw-resize-pointer="e"] {display: none;}
+        * 
         */
         SetResizeElement: function () {
             var resizes = _dom.Get('[data-ccw-resize]');

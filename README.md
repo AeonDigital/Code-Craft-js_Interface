@@ -35,6 +35,7 @@ de alteração de comportamentos.
 * `AlignToCenterScreen`     : Alinha o objeto alvo ao centro da janela do navegador do cliente.
 * `ExtendNode`              : Expande o node indicado por toda a area selecionada.
 * `SetDragElement`          : Permite que elementos marcados possam ser livremente arrastados pela tela.
+* `SetResizeElement`        : Permite que elementos marcados possam ser livremente redimensionados.
 
 
 **Importante**
