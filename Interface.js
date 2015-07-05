@@ -1449,6 +1449,8 @@ CodeCraft.Interface = new (function () {
         *     top: 0;
         *     left: 0;
         *     z-index: 1;
+        *
+        *     box-sizing: border-box;
         * }
         * [data-ccw-crop-shadow] {
         *     width: 100%;
