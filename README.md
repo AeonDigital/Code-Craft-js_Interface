@@ -24,6 +24,7 @@ de alteração de comportamentos.
 * `SetAnchorToNewPage`      : Aponta os links externos para abrirem em nova página.
 * `ScrollToAnchor`          : Efeito de rolagem suave entre anchors dentro da mesma tela
 * `SetAnchorAnimation`      : Seta rolagem suave para os links(anchor) da tela.
+* `SetAnchorPopup`          : Prepara os links configurados para abrirem seus destinos em janelas popup.
 
 
 ### Controladores de posição de elementos Html.
@@ -37,6 +38,7 @@ de alteração de comportamentos.
 * `SetDragElement`          : Permite que elementos marcados possam ser livremente arrastados pela tela.
 * `SetResizeElement`        : Permite que elementos marcados possam ser livremente redimensionados.
 * `SetCropCanvas`           : Utilizando "SetDragElement" e "SetResizeElement" em conjunto cria um componente para "cropar".
+
 
 
 

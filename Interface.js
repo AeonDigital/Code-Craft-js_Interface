@@ -1474,7 +1474,205 @@ CodeCraft.Interface = new (function () {
 
             _public.SetDragElement();
             _public.SetResizeElement();
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /**
+        * Gera uma instância "Popup".
+        *
+        * @constructs
+        *
+        * @memberof CodeCraft.Interface
+        *
+        * @param {String}                       url                                     Url da página a ser aberta.
+        * @param {String}                       pName                                   Nome de controle do popup.
+        * @param {Boolean}                      [scroll = false]                        Indica se roladem deve ou não estar habilitada.
+        * @param {Boolean}                      [resize = true]                         Indica se a janela deve poder ser redimensionada.
+        */
+        Popup : function (url, pName, scroll, resize) {
+
+
+            // URL que será aberta.
+            var _url = url;
+            // Identificador do popup.
+            var _pName = pName;
+            // Se "true" indica que a rolagem está habilitada.
+            var _srll = (scroll == undefined) ? 'yes' : scroll;
+            // Se "false" indica que não será possível redimensionar a janela.
+            var _rsze = (resize == undefined) ? 'yes' : resize;
+
+            
+            // Altura total em pixels da tela do usuário.
+            var _sH = screen.height;
+            // Largura total em pixels da tela do usuário.
+            var _sW = screen.width;
+
+
+            // Altura do popup.
+            var _h = parseInt(_sH / 2);
+            // Largura do popup.
+            var _w = parseInt(_sW / 2);
+
+
+            // Posição em pixels que o popup deve aparecer em relação ao topo da tela do usuário.
+            var _t = parseInt((_sH - _h) / 2);
+            // Posição em pixels que o popup deve aparecer em relação a margem esquerda da tela do usuário.
+            var _l = parseInt((_sW - _w) / 2);
+
+
+            // Se "true", o popup será dimensionado para o tamanho total da tela do usuário.
+            var _max = false;
+            // Se "true" indica que o popup será posicionado no centro da tela do usuário.
+            var _cen = true;
+
+
+
+            /**
+            * Verifica valores de Posicionamento e dimenções conforme atributos setados.
+            * 
+            * @function _checkAttributes
+            *
+            * @memberof Popup
+            *
+            * @private
+            */
+            var _checkAttributes = function () {
+                if (_max) {
+                    _h = _sH;
+                    _w = _sW;
+                }
+                if (_cen) {
+                    _t = parseInt((_sH - _h) / 2);
+                    _l = parseInt((_sW - _w) / 2);
+                }
+            };
+
+
+
+
+    
+            /**
+            * Permite definir as dimensões do Popup.
+            * 
+            * @function Dimension
+            *
+            * @memberof Popup
+            *
+            * @param {Boolean}                      max                             Use "true" para definir que o popup deve ocupar todo tamanho da tela.
+            * @param {Integer}                      [w]                             Tamanho em px da largura do popup.
+            * @param {Integer}                      [h]                             Tamanho em px da altura do popup.
+            */
+            this.Dimension = function (max, w, h) {
+                _max = max;
+                _w = w;
+                _h = h;
+            };
+
+            /**
+            * Define a Posição do Popup na Tela.
+            * 
+            * @function Position
+            *
+            * @memberof Popup
+            *
+            * @param {Boolean}                      isCenter                        Use "true" para definir que o popup deve surgir centralizado.
+            * @param {Integer}                      [t]                             Distancia em px que o popup deve estar do topo da tela.
+            * @param {Integer}                      [l]                             Distancia em px que o popup deve estar da margem esquerda da tela.
+            */
+            this.Position = function (isCenter, t, l) {
+                _cen = isCenter;
+                _t = t;
+                _l = l;
+            };
+
+            /**
+            * Executa a abertura do Popup.
+            * 
+            * @function Open
+            *
+            * @memberof Popup
+            */
+            this.Open = function () {
+                _checkAttributes();
+                window.open(_url, _pName, ('width=' + _w + ', height=' + _h + ', ' + 'top=' + _t + ', left=' + _l + ', ' + 'scrollbars=' + _srll + ', resizable=' + _rsze));
+            };
+
+        },
+
+
+
+
+
+        /**
+        * Automatiza a abertura de popups a partir da configuração do atributo "[data-ccw-popup]" nos links.
+        * Procura pelos links(anchor) cujo atributo [data-ccw-popup] esteja setado e adiciona
+        * nos mesmos um evento onclick para abrir seu respectivo link em um popup.
+        * 
+        * @function SetAnchorPopup
+        *
+        * @memberof CodeCraft.Interface
+        *
+        * @example Exemplo de configuração de um "a".
+        * <a href="http://www.aeondigital.com.br" 
+        *    data-ccw-popup="NomeDaJanela,Scroll,Resize,Width,Heigth">Abre popup</a>
+        *
+        * Scroll        {String}            Aceita apenas yes|no
+        * Resize        {String}            Aceita apenas yes|no
+        * [Width]       {Integer}           Largura do popup em px.
+        * [Heigth]      {Integer}           Altura do popup em px.
+        */
+        SetAnchorPopup : function () {
+
+            // Evento que será disparado quando o link for clicado
+            var _popupOpenWindow = function (e) {
+                e.preventDefault();
+
+                var url = this.href;
+                var cfg = this.getAttribute('data-ccw-popup').split(',');
+
+                var pop = 'InsidePopup=true';
+                url += (url.indexOf('?') == -1) ? '?' + pop : '&' + pop;
+
+                var oPop = new CodeCraft.Interface.Popup(url, cfg[0], cfg[1], cfg[2]);
+                if (cfg.length == 5) {
+                    oPop.Dimension(false, cfg[3], cfg[4]);
+                }
+
+                oPop.Position(true, 0, 0);
+                setTimeout(function () { oPop.Open(); }, 10);
+            };
+
+
+            var ancs = document.getElementsByTagName('a');
+
+            // Para cada Anchor com ID setado
+            for (var i = 0; i < ancs.length; i++) {
+                var a = ancs[i];
+
+                if (a.hasAttribute('data-ccw-popup')) {
+                    a.addEventListener('click', _popupOpenWindow, false);
+                }
+            }
         }
+
     };
 
 
