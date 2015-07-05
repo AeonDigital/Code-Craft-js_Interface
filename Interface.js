@@ -104,7 +104,14 @@ CodeCraft.Interface = new (function () {
         *
         * @type {InterfaceData}
         */
-        idata: null
+        idata: null,
+
+        /**
+        * Indica se o elemento que está sendo movido faz parte de um componente "crop".
+        *
+        * @type {Boolean}
+        */
+        crop: false
     };
 
 
@@ -166,7 +173,14 @@ CodeCraft.Interface = new (function () {
         *
         * @type {Object}
         */
-        ratio: null
+        ratio: null,
+
+        /**
+        * Indica se o elemento que está sendo redimensionado faz parte de um componente "crop".
+        *
+        * @type {Boolean}
+        */
+        crop: false
     };
 
 
@@ -254,6 +268,10 @@ CodeCraft.Interface = new (function () {
 
             // Identifica se há um limite para o elemento a ser movido
             if (t.hasAttribute('data-ccw-drag-limit')) { l = t; }
+
+            // Identifica se o resize faz parte de um componente "crop"
+            if (t.hasAttribute('data-ccw-crop-canvas')) { _drag.crop = true; }
+
 
             t = t.parentNode;
         }
@@ -353,6 +371,9 @@ CodeCraft.Interface = new (function () {
         if (_drag.onActive != null) {
             window[_drag.onActive](e);
         }
+        if (_drag.crop) {
+            _cropOnChangeResize(_drag);
+        }
     };
     /**
     * [SetDragElement]
@@ -368,6 +389,7 @@ CodeCraft.Interface = new (function () {
         _drag.limit = null;
         _drag.onActive = null;
         _drag.idata = null;
+        _drag.crop = false;
 
 
         _bodyContentSelection(true);
@@ -414,6 +436,10 @@ CodeCraft.Interface = new (function () {
 
             // Identifica se há um limite para o elemento a ser redimensionado
             if (t.hasAttribute('data-ccw-resize-limit')) { l = t; }
+
+            // Identifica se o resize faz parte de um componente "crop"
+            if (t.hasAttribute('data-ccw-crop-canvas')) { _resize.crop = true; }
+
 
             t = t.parentNode;
         }
@@ -789,6 +815,9 @@ CodeCraft.Interface = new (function () {
         if (_resize.onActive != null) {
             window[_resize.onActive](e);
         }
+        if (_resize.crop) {
+            _cropOnChangeResize(_resize);
+        }
     };
     /**
     * [SetResizeElement]
@@ -805,10 +834,73 @@ CodeCraft.Interface = new (function () {
         _resize.idata = null;
         _resize.ldata = null;
         _resize.ratio = null;
+        _resize.crop = false;
 
 
         _bodyContentSelection(true);
     };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+    * [SetCropCanvas]
+    * Prepara os elementos do painel de recorte de imagens.
+    *
+    * @private
+    *
+    * @param {Node}                 cropCanvas          Node do crop-canvas.
+    */
+    var _cropInitiElements = function (cropCanvas) {
+        var cropImage = _dom.Get('[data-ccw-crop-img]', cropCanvas)[0];
+        var cropResize = _dom.Get('[data-ccw-resize]', cropCanvas)[0];
+
+
+        // Ajusta o tamanho do canvas conforme o tamanho da imagem no display
+        cropCanvas.style.width = cropImage.offsetWidth + 'px';
+        cropCanvas.style.height = cropImage.offsetHeight + 'px';
+
+
+        cropResize.style.backgroundImage = 'url("' + cropImage.src + '")';
+        cropResize.style.backgroundRepeat = 'no-repeat';
+        cropResize.style.backgroundSize = cropCanvas.style.width + ' ' + cropCanvas.style.height;
+        cropResize.style.backgroundPosition = '-' + cropResize.style.left + ' -' + cropResize.style.top;
+    };
+    /**
+    * [SetCropCanvas]
+    * Ajusta o background da imagem ao espaço do componente "crop".
+    *
+    * @private
+    *
+    * @param {Object}               o                   Objeto "_drag" ou "_resize".
+    */
+    var _cropOnChangeResize = function (o) {
+        var s = o.element.style;
+        var nL = parseInt(s.left.replace('px', ''), 10) + 1;
+        var nT = parseInt(s.top.replace('px', ''), 10) + 1;
+        s.backgroundPosition = '-' + nL + 'px -' + nT + 'px';
+    };
+
+
+
+
+
 
 
 
@@ -1331,6 +1423,57 @@ CodeCraft.Interface = new (function () {
                 }
 
             }
+        },
+
+
+
+
+
+        /**
+        * Utilizando os eventos "SetDragElement" e "SetResizeElement" cria um painel onde
+        * uma imagem possa ser "recortada".
+        * Este método limita-se a gerar a interface para o recorte da imagem. O corte real
+        * deve ser feito por recursos server-side.
+        *
+        * @function SetCropCanvas
+        *
+        * @memberof CodeCraft.Interface
+        *
+        * CSS
+        * [data-ccw-crop-canvas] {overflow: hidden; text-align: center; margin: 0 auto;}
+        * [data-ccw-crop-img] {
+        *     max-width: 100%;
+        *     max-height: 100%;
+        * 
+        *     position: absolute;
+        *     top: 0;
+        *     left: 0;
+        *     z-index: 1;
+        * }
+        * [data-ccw-crop-shadow] {
+        *     width: 100%;
+        *     height: 100%;
+        *                 
+        *     position: relative;
+        *     z-index: 1;
+        * 
+        *     background-color: #000;
+        *     opacity: .6;
+        * }
+        * 
+        */
+        SetCropCanvas: function () {
+            var crops = _dom.Get('[data-ccw-crop-canvas]');
+
+            // Apenas se houver algum node de crop
+            if (crops != null) {
+                for (var it in crops) {
+                    _cropInitiElements(crops[it]);
+                }
+            }
+
+            _public.SetDragElement();
+            _public.SetResizeElement();
         }
     };
 

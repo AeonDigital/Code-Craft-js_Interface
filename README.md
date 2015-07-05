@@ -36,6 +36,8 @@ de alteração de comportamentos.
 * `ExtendNode`              : Expande o node indicado por toda a area selecionada.
 * `SetDragElement`          : Permite que elementos marcados possam ser livremente arrastados pela tela.
 * `SetResizeElement`        : Permite que elementos marcados possam ser livremente redimensionados.
+* `SetCropCanvas`           : Utilizando "SetDragElement" e "SetResizeElement" em conjunto cria um componente para "cropar".
+
 
 
 **Importante**

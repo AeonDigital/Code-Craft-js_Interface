@@ -51,21 +51,49 @@
             [data-ccw-resize-ratio] [data-ccw-resize-pointer="s"],
             [data-ccw-resize-ratio] [data-ccw-resize-pointer="w"],
             [data-ccw-resize-ratio] [data-ccw-resize-pointer="e"] {display: none;}
+
+
+
+            /* Crop */
+            [data-ccw-crop-canvas] {overflow: hidden; text-align: center; margin: 0 auto;}
+            [data-ccw-crop-img] {
+                max-width: 100%;
+                max-height: 100%;
+
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 1;
+            }
+            [data-ccw-crop-shadow] {
+                width: 100%;
+                height: 100%;
+                
+                position: relative;
+                z-index: 1;
+
+                background-color: #000;
+                opacity: .6;
+            }
         </style>
     </head>
     <body>
 
-        <div data-ccw-resize-limit="" data-ccw-drag-limit=""
+        <div 
+            data-ccw-resize-limit="" 
+            data-ccw-drag-limit="" 
+            data-ccw-crop-canvas=""
             style="width: 900px; height: 500px; background-color: #999; position: relative; top: 20px; left: 20px;">
             
+            <img data-ccw-crop-img="" src="__crop.jpg" alt="crop" />
+            <div data-ccw-crop-shadow=""></div>
+
             <div    data-ccw-drag="true" 
                     data-ccw-resize="" 
-                    data-ccw-resize-onactive="_eventOnActive"
-                    
+
                     data-ccw-resize-max="600px 400px"
                     data-ccw-resize-min="60px 40px"
                     style="width: 120px; height: 80px; top: 150px; left: 150px;">
-                <h1 style="text-align: center">!</h1>
             </div>
 
         </div>
@@ -83,13 +111,11 @@
             - tamanhos mínimos          [data-ccw-resize-min="100px 50px"]
             - tamanhos proporcionais    [data-ccw-resize-ratio="3:2"]
             */
-            var _eventOnActive = function (e) {
-                //console.log(e);
-            };
 
 
-            Interface.SetResizeElement();
-            Interface.SetDragElement();
+            //Interface.SetResizeElement();
+            //Interface.SetDragElement();
+            Interface.SetCropCanvas();
             // ]]>
         </script>
     </body>
