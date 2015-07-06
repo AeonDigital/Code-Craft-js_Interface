@@ -326,6 +326,25 @@ CodeCraft.Interface = new (function () {
         // Verifica se há um evento a ser disparado em conjunto com estes
         if (o.hasAttribute('data-ccw-drag-onactive')) {
             _drag.onActive = o.getAttribute('data-ccw-drag-onactive');
+            var onActive = null;
+
+
+            // Se é um evento global...
+            if (_drag.onActive.indexOf('.') == -1) {
+                onActive = window[_drag.onActive];
+            }
+            // senão...
+            else {
+                var split = _drag.onActive.split('.');
+                onActive = window[split[0]];
+
+                // "engatilha" o evento que deve ser disparado...
+                for (var i = 1; i < split.length; i++) {
+                    onActive = onActive[split[i]];
+                }
+            }
+
+            _drag.onActive = onActive;
         }
 
 
@@ -369,7 +388,7 @@ CodeCraft.Interface = new (function () {
 
 
         if (_drag.onActive != null) {
-            window[_drag.onActive](e);
+            _drag.onActive(e);
         }
         if (_drag.crop) {
             _cropOnChangeResize(_drag);
@@ -518,6 +537,25 @@ CodeCraft.Interface = new (function () {
         // Verifica se há um evento a ser disparado em conjunto com estes
         if (o.hasAttribute('data-ccw-resize-onactive')) {
             _resize.onActive = o.getAttribute('data-ccw-resize-onactive');
+            var onActive = null;
+
+
+            // Se é um evento global...
+            if (_resize.onActive.indexOf('.') == -1) {
+                onActive = window[_resize.onActive];
+            }
+            // senão...
+            else {
+                var split = _resize.onActive.split('.');
+                onActive = window[split[0]];
+
+                // "engatilha" o evento que deve ser disparado...
+                for (var i = 1; i < split.length; i++) {
+                    onActive = onActive[split[i]];
+                }
+            }
+
+            _resize.onActive = onActive;
         }
 
 
@@ -813,7 +851,7 @@ CodeCraft.Interface = new (function () {
 
 
         if (_resize.onActive != null) {
-            window[_resize.onActive](e);
+            _resize.onActive(e);
         }
         if (_resize.crop) {
             _cropOnChangeResize(_resize);
@@ -892,8 +930,9 @@ CodeCraft.Interface = new (function () {
     */
     var _cropOnChangeResize = function (o) {
         var s = o.element.style;
-        var nL = parseInt(s.left.replace('px', ''), 10) + 1;
-        var nT = parseInt(s.top.replace('px', ''), 10) + 1;
+        var nL = parseInt(s.left.replace('px', ''), 10);
+        var nT = parseInt(s.top.replace('px', ''), 10);
+
         s.backgroundPosition = '-' + nL + 'px -' + nT + 'px';
     };
 
@@ -1509,7 +1548,7 @@ CodeCraft.Interface = new (function () {
         * @param {Boolean}                      [scroll = false]                        Indica se roladem deve ou não estar habilitada.
         * @param {Boolean}                      [resize = true]                         Indica se a janela deve poder ser redimensionada.
         */
-        Popup : function (url, pName, scroll, resize) {
+        Popup: function (url, pName, scroll, resize) {
 
 
             // URL que será aberta.
@@ -1521,7 +1560,7 @@ CodeCraft.Interface = new (function () {
             // Se "false" indica que não será possível redimensionar a janela.
             var _rsze = (resize == undefined) ? 'yes' : resize;
 
-            
+
             // Altura total em pixels da tela do usuário.
             var _sH = screen.height;
             // Largura total em pixels da tela do usuário.
@@ -1570,7 +1609,7 @@ CodeCraft.Interface = new (function () {
 
 
 
-    
+
             /**
             * Permite definir as dimensões do Popup.
             * 
@@ -1641,7 +1680,7 @@ CodeCraft.Interface = new (function () {
         * [Width]       {Integer}           Largura do popup em px.
         * [Heigth]      {Integer}           Altura do popup em px.
         */
-        SetAnchorPopup : function () {
+        SetAnchorPopup: function () {
 
             // Evento que será disparado quando o link for clicado
             var _popupOpenWindow = function (e) {
