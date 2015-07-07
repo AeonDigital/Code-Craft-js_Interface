@@ -350,7 +350,7 @@ CodeCraft.Interface = new (function () {
 
 
         _bodyContentSelection(false);
-        _dom.SetEvent(window, 'mousemove', _moveElemOnMouseMove);
+        _dom.SetEvent(window, 'mousemove', _dragOnMouseMove);
     };
     /**
     * [SetDragElement]
@@ -360,7 +360,7 @@ CodeCraft.Interface = new (function () {
     *
     * @param {Event}                e                   Evento que disparou o evento.
     */
-    var _moveElemOnMouseMove = function (e) {
+    var _dragOnMouseMove = function (e) {
         var i = _drag.idata;
         var l = _drag.limit.axis;
 
@@ -400,8 +400,8 @@ CodeCraft.Interface = new (function () {
     *
     * @private
     */
-    var _stopDragOnMouseUp = function () {
-        _dom.RemoveEvent(window, 'mousemove', _moveElemOnMouseMove);
+    var _dragOnMouseUp = function () {
+        _dom.RemoveEvent(window, 'mousemove', _dragOnMouseMove);
 
 
         _drag.element = null;
@@ -562,7 +562,7 @@ CodeCraft.Interface = new (function () {
 
         _bodyContentSelection(false);
         _dom.SetEvent(window, 'mousemove', _resizeOnMouseMove);
-        _dom.SetEvent(window, 'mouseup', _stopResizeOnMouseUp);
+        _dom.SetEvent(window, 'mouseup', _resizeOnMouseUp);
     };
     /**
     * [SetResizeElement]
@@ -863,7 +863,7 @@ CodeCraft.Interface = new (function () {
     *
     * @private
     */
-    var _stopResizeOnMouseUp = function () {
+    var _resizeOnMouseUp = function () {
         _dom.RemoveEvent(window, 'mousemove', _resizeOnMouseMove);
 
         _resize.element = null;
@@ -930,8 +930,8 @@ CodeCraft.Interface = new (function () {
     */
     var _cropOnChangeResize = function (o) {
         var s = o.element.style;
-        var nL = parseInt(s.left.replace('px', ''), 10);
-        var nT = parseInt(s.top.replace('px', ''), 10);
+        var nL = parseInt(s.left.replace('px', ''), 10) + 1;
+        var nT = parseInt(s.top.replace('px', ''), 10) + 1;
 
         s.backgroundPosition = '-' + nL + 'px -' + nT + 'px';
     };
@@ -1343,7 +1343,7 @@ CodeCraft.Interface = new (function () {
 
             // Apenas se houver algum node movel
             if (drags != null) {
-                _dom.SetEvent(window, 'mouseup', _stopDragOnMouseUp);
+                _dom.SetEvent(window, 'mouseup', _dragOnMouseUp);
 
                 for (var it in drags) {
                     var d = drags[it];
@@ -1380,6 +1380,7 @@ CodeCraft.Interface = new (function () {
         *     box-sizing: border-box;
         * 
         *     background-color: #FFF;
+        *     cursor: move;
         * }
         * [data-ccw-resize-limit] {
         *     overflow: hidden;
@@ -1418,7 +1419,7 @@ CodeCraft.Interface = new (function () {
             var resizes = _dom.Get('[data-ccw-resize]');
 
             if (resizes != null) {
-                _dom.SetEvent(window, 'mouseup', _stopResizeOnMouseUp);
+                _dom.SetEvent(window, 'mouseup', _resizeOnMouseUp);
 
 
                 // Para cada item marcado como redimensionável...
