@@ -1372,6 +1372,7 @@ CodeCraft.Interface = new (function () {
         *
         * CSS
         * body {margin: 0; padding: 0;}
+        * [data-ccw-drag] {cursor: move;}
         * [data-ccw-resize] {
         *     position: absolute;
         *     z-index: 2;
@@ -1380,7 +1381,6 @@ CodeCraft.Interface = new (function () {
         *     box-sizing: border-box;
         * 
         *     background-color: #FFF;
-        *     cursor: move;
         * }
         * [data-ccw-resize-limit] {
         *     overflow: hidden;
