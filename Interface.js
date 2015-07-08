@@ -510,6 +510,7 @@ CodeCraft.Interface = new (function () {
         //
         // [data-ccw-resize-max]    "(maxW)px (maxH)px"     Define os valores máximos que o elemento pode vir a ter.
         // [data-ccw-resize-min]    "(maxW)px (maxH)px"     Define os valores mínimos que o elemento pode vir a ter.
+        // [data-ccw-resize-ratio]  "rW:fH"                 Define as proporções que devem ser usadas para o redimensionamento.
         //
         if (o.hasAttribute('data-ccw-resize-max')) {
             var dim = o.getAttribute('data-ccw-resize-max').split(' ');
@@ -525,12 +526,39 @@ CodeCraft.Interface = new (function () {
                 _resize.limit.dim.minH = parseInt(dim[1].replace('px', ''));
             }
         }
-        if (o.hasAttribute('data-ccw-resize-ratio')) {
-            var r = o.getAttribute('data-ccw-resize-ratio').split(':');
+        if (o.hasAttribute('data-ccw-resize-ratio') || e.shiftKey) {
+
+            var r = [];
+            if (o.hasAttribute('data-ccw-resize-ratio')) {
+                r = o.getAttribute('data-ccw-resize-ratio').split(':');
+            }
+            else if (e.shiftKey) {
+                r.push(_resize.element.style.width.replace('px', ''));
+                r.push(_resize.element.style.height.replace('px', ''));
+            }
+
+            // Encontrando os dois valores...
             if (r.length == 2) {
-                _resize.ratio = { W: r[0], H: r[1] };
+                var rW = 1;
+                var rH = 1;
+
+                // Se as proporções são diferentes...
+                if (r[0] !== r[1]) {
+                    // Se largura maior que altura...
+                    if (r[0] > r[1]) {
+                        rW = (r[0] / r[1]);
+                    }
+                    // Se altura maior que largura...
+                    else if (r[0] < r[1]) {
+                        rH = (r[1] / r[0]);
+                    }
+                }
+
+                _resize.ratio = { W: rW, H: rH };
             }
         }
+
+
 
 
 
@@ -809,6 +837,8 @@ CodeCraft.Interface = new (function () {
     * @param {Event}                e                   Evento que disparou o evento.
     */
     var _resizeOnMouseMove = function (e) {
+
+        if (_resize.ratio != null) { _resize.direction = 'e'; }
 
         // Calcula as dimensões conforme o ponteiro que foi pressionado 
         switch (_resize.direction) {
