@@ -54,6 +54,10 @@
             [data-ccw-resize-ratio] [data-ccw-resize-pointer="e"] {display: none;}
 
 
+            /* Esconde ponteiros para casos fixos */
+            [data-ccw-resize-fix] [data-ccw-resize-pointer] {display: none;}
+
+
 
             /* Crop */
             [data-ccw-crop-canvas] {overflow: hidden; text-align: center; margin: 0 auto;}
@@ -94,8 +98,7 @@
             <div    data-ccw-drag="true" 
                     data-ccw-resize="" 
 
-                    data-ccw-resize-max="600px 400px"
-                    data-ccw-resize-min="60px 40px"
+                    data-ccw-resize-fix="200px 75px"
                     style="width: 120px; height: 80px; top: 150px; left: 150px;">
             </div>
 

@@ -1444,6 +1444,7 @@ CodeCraft.Interface = new (function () {
         * [data-ccw-resize-ratio] [data-ccw-resize-pointer="w"],
         * [data-ccw-resize-ratio] [data-ccw-resize-pointer="e"] {display: none;}
         * 
+        * [data-ccw-resize-fix] [data-ccw-resize-pointer] {display: none;}
         */
         SetResizeElement: function () {
             var resizes = _dom.Get('[data-ccw-resize]');
